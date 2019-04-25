@@ -1,39 +1,17 @@
-import {add} from '../../add'
+declare namespace Cypress {
+  interface Chainable<Subject = any> {
+    promisify: () => Promise<Subject>
+  }
+}
 
-describe('TypeScript', () => {
-  it('works', () => {
-    // note TypeScript definition
-    const x: number = 42
-  })
+describe('cypress-promise', () => {
 
-  it('checks shape of an object', () => {
-    const object = {
-      age: 21,
-      name: 'Joe',
-    }
-    expect(object).to.have.all.keys('name', 'age')
-  })
-
-  it('uses cy commands', () => {
-    cy.wrap({}).should('deep.eq', {})
-  })
-
-  it('tests our example site', () => {
+  it('can convert cypress Chainable to promise and use async/await', async () => {
     cy.visit('https://example.cypress.io/')
-    cy.get('.home-list')
-      .contains('Querying')
-      .click()
-    cy.get('#query-btn').should('contain', 'Button')
-  })
-
-  // enable once we release updated TypeScript definitions
-  it('has Cypress object type definition', () => {
-    expect(Cypress.version).to.be.a('string')
-  })
-
-
-  it('adds numbers', () => {
-    expect(add(2, 3)).to.equal(5)
+    const text = await cy.get('h1')
+      .then(title => title.text())
+      .promisify();
+    expect(text.trim()).to.equal('Kitchen Sink')
   })
 
 })
